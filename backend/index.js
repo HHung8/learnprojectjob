@@ -13,6 +13,7 @@ app.use(cookieParser()); // Parse cookie từ header request
 const createUser = async () => {
 console.log('毎日ITを勉強してるでもがんばってくださいね')
 console.log('Test commit 2')
+console.log('Test commit 3')
 };
 const corsOptions = {
     origin: 'http://localhost:5173',
