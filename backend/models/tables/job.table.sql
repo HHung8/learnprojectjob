@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS jobs (
+	 id SERIAL PRIMARY KEY,
+	 title VARCHAR(255) NOT NULL, 
+	 description TEXT NOT NULL,
+	 requirements TEXT[],
+	 salary INTEGER NOT NULL,
+	 experience_level INTEGER NOT NULL,
+	 location TEXT NOT NULL,
+	 job_type VARCHAR(100) NOT NULL,
+     position INTEGER NOT NULL,
+	 company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+	 created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)

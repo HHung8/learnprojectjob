@@ -1,0 +1,9 @@
+
+CREATE TABLE IF NOT EXISTS applications(
+	id SERIAL PRIMARY KEY,
+	job_id INTEGER NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
+	applicant_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)

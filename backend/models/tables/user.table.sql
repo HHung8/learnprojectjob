@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users (
+	id SERIAL PRIMARY KEY,
+	fullname VARCHAR(255) NOT NULL,
+	email VARCHAR(255) UNIQUE NOT NULL,
+	phone_number VARCHAR(20) NOT NULL,
+	password TEXT NOT NULL,
+	role VARCHAR(50) NOT NULL CHECK (role IN ('student', 'recruter')),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
+
+
+
+
+
+
+
+
+
+
