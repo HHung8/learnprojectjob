@@ -2,7 +2,10 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import pool from './db.js';
+import userRoute from "./routes/user.route.js";
+import dbStatusRoute from "./routes/dbStatus.route.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
@@ -11,19 +14,22 @@ const app = express();
 app.use(express.json()); // Mục đích: Cho phép Express tự động phân tích JSON trong body của request.
 app.use(express.urlencoded({extended:true})); // Parse form dữ liệu từ body request
 app.use(cookieParser()); // Parse cookie từ header request
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.url}`);
+  next();
+});
 
-const createUser = async () => {
-console.log('毎日ITを勉強してるでもがんばって くださいね')
-console.log('Test commit 2')
-console.log('Test commit 3')
-};
 const corsOptions = { 
     origin: 'http://localhost:5173',  
     credentials:true
 }
-  
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); 
 const PORT = process.env.PORT || 3000;
+
+// api's
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1", dbStatusRoute);
+
 
 app.listen(PORT, async () => {
   // await createUser();

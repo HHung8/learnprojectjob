@@ -2,17 +2,20 @@ import pool from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { getDataUri } from "../utils/dataUri.js";
+// import { getDataUri } from "../utils/dataUri.js";
 dotenv.config();
 
 export const register = async(req,res) => {
+    console.log("Register API called");
+    debugger;
     try {
         const {fullname, email, phone_number, password, role} = req.body;
         if (!fullname || !email || !phone_number || !password || !role) {
         return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
         }
+        debugger;
         // Kiểm tra email đã tồn tại chưa
-        const checkEmailQuery = 'SELECT * FROM user WHERE email = $1';
+        const checkEmailQuery = 'SELECT * FROM users WHERE email = $1';
         const existingUser = await pool.query(checkEmailQuery, [email]);
         if(existingUser.rows.length > 0) {
             return res.status(400).json({message: 'Email đã tồn tại'});
@@ -28,7 +31,7 @@ export const register = async(req,res) => {
             VALUES($1, $2, $3, $4, $5)
             RETURNING id, fullname, email, phone_number, password, role, created_at;
         `;
-        const values = [fullname, email, phone_number, password, role];
+        const values = [fullname, email, phone_number, hashedPassword, role];
         const result = await pool.query(insertQuery, values);
         const newUser = result.rows[0];
 
@@ -38,7 +41,7 @@ export const register = async(req,res) => {
         })
     } catch (error) {
         console.error('Lỗi đăng ký', error);
-        return res.status(500).message({message:"Lỗi server"})
+        return res.status(500).json({message:"Lỗi server"})
     }
 };
 
@@ -53,7 +56,7 @@ export const login = async(req,res) => {
             })
         };
          // Tìm user theo email
-        const userQuery = "SELECT * FROM users WHERE email = $1 AND role $=2";
+        const userQuery = "SELECT * FROM users WHERE email = $1 AND role = $2";
         const result = await pool.query(userQuery, [email,role]);
         if(result.rows.length === 0) {
             return res.status(400).json({
@@ -132,7 +135,7 @@ export const updateProfile  = async (req,res) => {
         let resumeUrl = null;
         let resumeOriginalName = null;
         if (file) {
-            const fileUri = getDataUri(file);
+            // const fileUri = getDataUri(file);
             const uploadResult = await cloudinary.v2.uploader.upload(fileUri.content);
             resumeUrl = uploadResult.secure_url;
             resumeOriginalName = file.originalname;

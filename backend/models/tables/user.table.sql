@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(255) UNIQUE NOT NULL,
 	phone_number VARCHAR(20) NOT NULL,
 	password TEXT NOT NULL,
-	role VARCHAR(50) NOT NULL CHECK (role IN ('student', 'recruter')),
+	role VARCHAR(50) NOT NULL CHECK (role IN ('student', 'recruiter')),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
