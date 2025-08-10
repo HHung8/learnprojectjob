@@ -5,6 +5,7 @@ import pool from './db.js';
 import userRoute from "./routes/user.route.js";
 import companyRoute from "./routes/company.route.js";
 import dbStatusRoute from "./routes/dbStatus.route.js";
+import jobRoute from "./routes/jobs.route.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -32,7 +33,7 @@ app.use("/api/v1/user", userRoute);
 // api's company
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1", dbStatusRoute);
-
+app.use("/api/v1/job", jobRoute);
 
 app.listen(PORT, async () => {
   // await createUser();
