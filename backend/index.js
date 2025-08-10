@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import pool from './db.js';
 import userRoute from "./routes/user.route.js";
+import companyRoute from "./routes/company.route.js";
 import dbStatusRoute from "./routes/dbStatus.route.js";
 import dotenv from "dotenv";
 
@@ -26,8 +27,10 @@ const corsOptions = {
 app.use(cors(corsOptions)); 
 const PORT = process.env.PORT || 3000;
 
-// api's
+// api's user
 app.use("/api/v1/user", userRoute);
+// api's company
+app.use("/api/v1/company", companyRoute);
 app.use("/api/v1", dbStatusRoute);
 
 
