@@ -48,7 +48,15 @@ export const getAllJobs = async(req,res) => {
     try {
         const keyword = req.query.keyword || "";
         const query = `
-            SELECT  j.* FROM jobs j
+            SELECT  
+                j.*,
+                c.id AS company_id,
+                c.name AS company_name,
+                c.description AS company_description,
+                c.website AS company_website,
+                c.location AS company_location,
+                c.logo AS company_logo
+            FROM jobs j
             LEFT JOIN companies c ON j.company_id = c.id
             WHERE j.title ILIKE $1 OR j.description ILIKE $1
             ORDER BY j.created_at DESC
@@ -57,10 +65,36 @@ export const getAllJobs = async(req,res) => {
         if(result.rows.length === 0) {
             return res.status(404).json({message: "Not found this job", success:false});
         };
+        const jobs = result.rows.map(job => {
+            const {
+                company_id,
+                company_name, 
+                company_description,
+                company_website,
+                company_location,
+                company_logo,
+                ...jobData
+            } = job;
+            return {
+                ...jobData,
+                company: {
+                    id:company_id,
+                    name: company_name,
+                    description: company_description,
+                    website: company_website,
+                    location: company_location,
+                    logo: company_logo
+                }
+            }
+        })
         return res.status(200).json({
-            job: result.rows,
+            jobs,
             success: true
-        });
+        })
+        // return res.status(200).json({
+        //     job: result.rows,
+        //     success: true
+        // });
 
     } catch (error) {
         console.error("Error getAllJobs", error);
@@ -100,7 +134,7 @@ export const getAdminJobs = async(req,res) => {
             SELECT j.*, c.name as company_name
             FROM jobs j
             LEFT JOIN companies c ON j.company_id = c.id
-            WHERE j.created_at = $1
+            WHERE c.user_id = $1
             ORDER BY j.created_at DESC;
         `;
         const result = await pool.query(query, [adminId]);
