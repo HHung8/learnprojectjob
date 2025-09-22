@@ -41,4 +41,3 @@ app.listen(PORT, async () => {
   // await createUser();
   console.log(`Server run PORT ${PORT}`)
 })
-

@@ -7,13 +7,13 @@ dotenv.config();
 
 export const register = async(req,res) => {
     console.log("Register API called");
-    debugger;
     try {
         const {fullname, email, phone_number, password, role} = req.body;
+        const file = req.file;
         if (!fullname || !email || !phone_number || !password || !role) {
+        if (file) fs.unlinkSync(file.path); 
         return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
         }
-        debugger;
         // Kiểm tra email đã tồn tại chưa
         const checkEmailQuery = 'SELECT * FROM users WHERE email = $1';
         const existingUser = await pool.query(checkEmailQuery, [email]);
