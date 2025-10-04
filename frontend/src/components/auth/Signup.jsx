@@ -9,6 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_BASE_URL from "../../config/api";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlice";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -20,6 +22,8 @@ const Signup = () => {
     file: "",
   });
   const navigate = useNavigate();
+  const {loading} = useSelector(store => store.auth);
+  const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -41,24 +45,24 @@ const Signup = () => {
         formData.append("file", input.file);
     }
     try {
+        dispatch(setLoading(true));
         const res = await axios.post(`${API_BASE_URL}/user/register`, formData, {
             headers: { 'Content-Type': "multipart/form-data" },
             withCredentials: true,
         });
-        console.log(`check res`, res);
         if(res.status === 201) {
             toast.success(res.data.message)
             navigate("/login")
         }
-        // if(res.data.success === 200) {
-        //     // toast.success(res.data.message);
-        //     // navigate(".login");
-        // }   
     } catch (error) {
         console.error(error);
+        toast.error(error.response.data.message);
+        console.log(`check error`, error.response.data.message);
+    } finally {
+      dispatch(setLoading(false))
     }
   }
-  const loading = false;
+  
   return (
     <div>
       <Navbar />
@@ -139,23 +143,16 @@ const Signup = () => {
                 accept="image/*"
                 type="file"
                 className="cursor-pointer"
-                // onChange={changeFileHandler}
+                onChange={changeFileHandler}
               />
             </div>
           </div>
-          {loading ? (
-            <Button className="w-full my-4">
-              {" "}
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait{" "}
-            </Button>
-          ) : (
-            <Button type="submit" className="w-full my-4">
-              Sign up
-            </Button>
-          )}
-          <span className="text-sm">
-            Already have an account <Link>Login</Link>{" "}
-          </span>
+          {
+            loading 
+            ? <Button> <Loader2 className="mr-2 h-4 w-4 animate-spin " /> Please wait </Button>
+            : <Button type="submit" className="w-full my-4">Sign up</Button>
+          }
+          <span className="text-sm">Already have an account ? <Link to="/login" className="text-blue-600">Login</Link> </span>
         </form>
       </div>
     </div>

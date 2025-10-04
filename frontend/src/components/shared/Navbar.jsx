@@ -1,7 +1,6 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import {Popover,PopoverContent,PopoverTrigger,} from "@/components/ui/popover"
-import {Avatar,AvatarFallback,AvatarImage,} from "@/components/ui/avatar"
+import {Avatar,AvatarImage,} from "@/components/ui/avatar"
 import {Button} from "@/components/ui/button"
 import { LogOut, User2 } from 'lucide-react'
 
@@ -16,14 +15,14 @@ const Navbar = () => {
             <div className='flex items-center gap-12'>
                 <ul className='flex font-medium items-center gap-5'>
                     <li><Link to="/">Home</Link></li>
-                    <li><Link to="#">Jobs</Link></li>
-                    <li><Link to="#">Browse</Link></li>
+                    <li><Link to="/jobs">Jobs</Link></li>
+                    <li><Link to="/browse">Browse</Link></li>
                 </ul>
                 {
                     !user ? (
                       <div className='flex items-center gap-2'>
                         <Link to="/login"><Button variant="outline">Login</Button></Link>
-                        <Link to="/signup"><Button className="bg-[#6A38C2] hover:bg-[#5b30a6]">Signup</Button></Link>
+                        <Link to="/signup"><Button className="bg-[#38c256] hover:bg-[#30a673]">Signup</Button></Link>
                       </div>
                     ): (
                     <Popover>
@@ -59,7 +58,7 @@ const Navbar = () => {
                 )
             }
             </div>
-        </div>
+        </div>    
     </div>
     
   )

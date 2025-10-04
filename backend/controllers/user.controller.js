@@ -24,14 +24,20 @@ export const register = async(req,res) => {
         // Mã hoá mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10);
         console.log(`check hashedPassword`, hashedPassword);
+
+        // Nếu có file thì lấy đường dẫn
+        let filePath = null;
+        if(file) {
+            filePath = file.path;
+        }
         
         // Thêm người dùng mới
         const insertQuery = `
-            INSERT INTO users (fullname, email, phone_number, password, role) 
-            VALUES($1, $2, $3, $4, $5)
-            RETURNING id, fullname, email, phone_number, password, role, created_at;
+            INSERT INTO users (fullname, email, phone_number, password, role, file_path) 
+            VALUES($1, $2, $3, $4, $5, $6)
+            RETURNING id, fullname, email, phone_number, password, role, file_path, created_at;
         `;
-        const values = [fullname, email, phone_number, hashedPassword, role];
+        const values = [fullname, email, phone_number, hashedPassword, role, filePath];
         const result = await pool.query(insertQuery, values);
         const newUser = result.rows[0];
 
