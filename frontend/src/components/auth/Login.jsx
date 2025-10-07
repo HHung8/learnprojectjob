@@ -10,7 +10,7 @@ import API_BASE_URL from "../../config/api";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../redux/authSlice";
+import { setLoading, setUser } from "../../redux/authSlice";
 
 const Login = () => {
   const [input, setInput] = useState({ 
@@ -40,8 +40,9 @@ const Login = () => {
         console.log(`check response`, res);
         console.log('`check 123`', 123)
         if(res.status === 200) {
-          toast.success(res.data.message)
+          dispatch(setUser(res.data.user));
           navigate("/")
+          toast.success(res.data.message)
         }
           
       } catch (error) {
