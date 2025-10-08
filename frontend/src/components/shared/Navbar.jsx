@@ -1,14 +1,32 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {Popover,PopoverContent,PopoverTrigger,} from "@/components/ui/popover"
 import {Avatar,AvatarImage,} from "@/components/ui/avatar"
 import {Button} from "@/components/ui/button"
 import { LogOut, User2 } from 'lucide-react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+import API_BASE_URL from '../../config/api'
+import { setUser } from '../../redux/authSlice'
+import { toast } from 'sonner'
 
 const Navbar = () => {
   const {user} = useSelector(store => store.auth);
   console.log(`check user login`, user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const logoutHandler = async () => {
+    try {
+        const res = await axios.get(`${API_BASE_URL}/user/logout`, {withCredentials:true});
+        if(res.status === 200) {
+            dispatch(setUser(null));
+            toast.success(res.data.message);
+            navigate("/");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  }
 
   return (
     <div className='bg-white'>
@@ -32,14 +50,14 @@ const Navbar = () => {
                     <Popover>
                         <PopoverTrigger asChild>
                             <Avatar className="cursor-pointer">
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                            <AvatarImage src={user?.file_path} alt="@shadcn" />
                             </Avatar>
                         </PopoverTrigger>
                     <PopoverContent className="w-80">
                       <div className=''>
                         <div className='flex gap-4 space-y-2'>
                                 <Avatar className="cursor-pointer">
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                                <AvatarImage src={user?.file_path} alt="@shadcn" />
                                 </Avatar>
                                 <div>
                                     <h4 className='font-medium'>Patel YushingDev</h4>
@@ -55,7 +73,7 @@ const Navbar = () => {
                             </div>
                             <div className='flex w-fit items-center gap-2 cursor-pointer'>
                                 <LogOut />
-                                <Button variant="link">Logout</Button>
+                                <Button onClick={logoutHandler} variant="link">Logout</Button>
                             </div>
                         </div>
                       </div>

@@ -7,7 +7,6 @@ import path from "path";
 dotenv.config();
 
 export const register = async (req, res) => {
-  console.log("Register API called");
   try {
     const { fullname, email, phone_number, password, role } = req.body;
     const file = req.file;
@@ -49,29 +48,29 @@ export const register = async (req, res) => {
     ];
     const result = await pool.query(insertQuery, values);
     const newUser = result.rows[0];
-    // Tạo 1 profile mặc định
-    await pool.query(
-      `INSERT INTO user_profiles (user_id, bio, skills, company_id, profile_photo) VALUES ($1, $2, $3, $4, $5)`,
-      [newUser.id, "", "{}", null, filePath]
-    )
-    // 📦 Chuẩn hóa dữ liệu trả về (đồng nhất với login & updateProfile)
-    const responseUser = {
-      id: newUser.id,
-      fullname: newUser.fullname,
-      email: newUser.email,
-      phone_number: newUser.phone_number,
-      role: newUser.role,
-      created_at: newUser.created_at,
-      profile: {
-        bio: "",
-        skills: [],
-        company_id: null,
-        profile_photo: newUser.file_path || null,
-      },
-    };
+    // // Tạo 1 profile mặc định
+    // await pool.query(
+    //   `INSERT INTO user_profiles (user_id, bio, skills, company_id, profile_photo) VALUES ($1, $2, $3, $4, $5)`,
+    //   [newUser.id, "", "{}", null, filePath]
+    // )
+    // // 📦 Chuẩn hóa dữ liệu trả về (đồng nhất với login & updateProfile)
+    // const responseUser = {
+    //   id: newUser.id,
+    //   fullname: newUser.fullname,
+    //   email: newUser.email,
+    //   phone_number: newUser.phone_number,
+    //   role: newUser.role,
+    //   created_at: newUser.created_at,
+    //   profile: {
+    //     bio: "",
+    //     skills: [],
+    //     company_id: null,
+    //     profile_photo: newUser.file_path || null,
+    //   },
+    // };
     return res.status(201).json({
       message: "Đăng ký thành công",
-      user: responseUser,
+      user: newUser,
     });
   } catch (error) {
     console.error("Lỗi đăng ký", error);
@@ -99,6 +98,7 @@ export const login = async (req, res) => {
         u.password,
         u.role,
         u.created_at,
+        u.file_path,
         p.bio,
         p.skills,
         p.company_id,
@@ -146,6 +146,7 @@ export const login = async (req, res) => {
       phone_number: user.phone_number,
       role: user.role,
       created_at: user.created_at,
+      file_path: user.file_path,
       profile: {
         bio: user.bio || null,
         skills: user.skills || [],
@@ -213,7 +214,6 @@ export const updateProfile = async (req, res) => {
   try {
     // const userId = req.body.userId;
     const userId = req.user?.userId;
-    console.log(`Check userId`, userId);
     const file = req.file; // File upload
     const { fullname, email, phone_number, bio, skills, company_id } = req.body;
     if (!userId) {
@@ -259,10 +259,10 @@ export const updateProfile = async (req, res) => {
           .split(",")
           .map((s) => s.trim());
     // Nếu có file, lưu đường dẫn
-    let filePath = null;
+    let profilePhotoPath = null;
     if (file) {
       const baseUrl = `${req.protocol}://${req.get("host")}`;
-      filePath = `${baseUrl}/uploads/${path.basename(file.path)}`;
+      profilePhotoPath = `${baseUrl}/uploads/${path.basename(file.path)}`;
     }
     // Cập nhật bảng user
     await pool.query(
@@ -272,11 +272,10 @@ export const updateProfile = async (req, res) => {
                     fullname = COALESCE($1, fullname),
                     email = COALESCE($2, email),
                     phone_number = COALESCE($3, phone_number),
-                    file_path = COALESCE($4, file_path),
                     updated_at = CURRENT_TIMESTAMP
-              WHERE id = $5
+              WHERE id = $4
             `,
-      [fullname || null, email || null, phone_number || null, filePath, userId]
+      [fullname || null, email || null, phone_number || null, userId]
     );
 
     // Kiểm tra xem profile có chưa
@@ -293,7 +292,7 @@ export const updateProfile = async (req, res) => {
                   (user_id, bio, skills, company_id,profile_photo)
                   VALUES($1, $2, $3, $4, $5)
                 `,
-        [userId, bio, skillsArray, company_id || null, filePath]
+        [userId, bio, skillsArray, company_id || null, profilePhotoPath]
         // ` INSERT INTO user_profiles
         //   (user_id, bio, skills, resume, resume_original_name, company_id)
         //   VALUES($1, $2, $3, $4, $5, $6)
@@ -311,7 +310,7 @@ export const updateProfile = async (req, res) => {
                         profile_photo = COALESCE($4, profile_photo)
                     WHERE user_id = $5
                 `,
-        [bio, skillsArray, company_id || null, filePath, userId]
+        [bio, skillsArray, company_id || null, profilePhotoPath, userId]
         //     `
         //         UPDATE user_profiles
         //         SET
@@ -329,15 +328,17 @@ export const updateProfile = async (req, res) => {
     // Lấy thông tin user + profile sau khi updated
     const updated = await pool.query(
       `
-                SELECT 
-                    u.id, u.fullname, u.email, u.phone_number, u.role, u.created_at, u.updated_at,
-                    p.bio, p.skills, p.company_id, p.profile_photo                     
-                FROM users u 
-                LEFT JOIN user_profiles p ON u.id = p.user_id
-                WHERE u.id = $1
-            `,
+        SELECT 
+          u.id, u.fullname, u.email, u.phone_number, u.role, u.created_at, u.updated_at, u.file_path,
+          p.bio, p.skills, p.company_id, p.profile_photo
+        FROM users u 
+        LEFT JOIN user_profiles p ON u.id = p.user_id
+        WHERE u.id = $1
+      `,
       [userId]
     );
+
+    const user = updated.rows[0];
     // `
     //     SELECT
     //         u.id, u.fullname, u.email, u.phone_number, u.role, u.created_at, u.updated_at,
@@ -350,18 +351,19 @@ export const updateProfile = async (req, res) => {
       message: "Cập nhật hồ sơ thành công",
       success: true,
       user: {
-        id: updated.rows[0].id,
-        fullname: updated.rows[0].fullname,
-        email: updated.rows[0].email,
-        phone_number: updated.rows[0].phone_number,
-        role: updated.rows[0].role,
-        created_at: updated.rows[0].created_at,
-        updated_at: updated.rows[0].updated_at,
+        id: user.id,
+        fullname: user.fullname,
+        email: user.email,
+        phone_number: user.phone_number,
+        role: user.role,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        file_path: user.file_path, // Ảnh chính (vẫn giữ nguyên)
         profile: {
-          bio: updated.rows[0].bio || null,
-          skills: updated.rows[0].skills || [],
-          company_id: updated.rows[0].company_id || null,
-          profile_photo: updated.rows[0].profile_photo || null,
+          bio: user.bio || null,
+          skills: user.skills || [],
+          company_id: user.company_id || null,
+          profile_photo: user.profile_photo || null, // ảnh profile mới (nếu có)
         },
       },
     });
