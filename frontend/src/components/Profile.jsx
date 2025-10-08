@@ -5,9 +5,9 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button"
 import { Contact, Mail, Pen } from 'lucide-react';
 import {Label} from "@/components/ui/label";
-import AppliedJobTable from './AppliedJobTable';
-import UpdateProfileDialog from './UpdateProfileDialog';
 import { useSelector } from 'react-redux';
+import UpdateProfileDialog from './UpdateProfileDialog';
+import AppliedJobTable from './AppliedJobTable';
 
 const skills = ["Html", "Css", "Javascript", "ReactJS"];
 const isResume = true;
@@ -37,7 +37,7 @@ const Profile = () => {
                     <span>{user?.email}</span>
                 </div>
                 <div className='flex items-center gap-3 my-2'>
-                    <Contact />
+                    <Contact /> 
                     <span>{user?.phone_number}</span>
                 </div>
             </div>
