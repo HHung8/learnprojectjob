@@ -2,6 +2,7 @@ import pool from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import path from "path";
 // import { getDataUri } from "../utils/dataUri.js";
 dotenv.config();
 
@@ -28,7 +29,8 @@ export const register = async (req, res) => {
     // Nếu có file thì lấy đường dẫn
     let filePath = null;
     if (file) {
-      filePath = file.path;
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      filePath = `${baseUrl}/uploads/${path.basename(file.path)}`;
     }
 
     // Thêm người dùng mới
@@ -47,10 +49,29 @@ export const register = async (req, res) => {
     ];
     const result = await pool.query(insertQuery, values);
     const newUser = result.rows[0];
-
+    // Tạo 1 profile mặc định
+    await pool.query(
+      `INSERT INTO user_profiles (user_id, bio, skills, company_id, profile_photo) VALUES ($1, $2, $3, $4, $5)`,
+      [newUser.id, "", "{}", null, filePath]
+    )
+    // 📦 Chuẩn hóa dữ liệu trả về (đồng nhất với login & updateProfile)
+    const responseUser = {
+      id: newUser.id,
+      fullname: newUser.fullname,
+      email: newUser.email,
+      phone_number: newUser.phone_number,
+      role: newUser.role,
+      created_at: newUser.created_at,
+      profile: {
+        bio: "",
+        skills: [],
+        company_id: null,
+        profile_photo: newUser.file_path || null,
+      },
+    };
     return res.status(201).json({
       message: "Đăng ký thành công",
-      user: newUser,
+      user: responseUser,
     });
   } catch (error) {
     console.error("Lỗi đăng ký", error);
@@ -192,11 +213,13 @@ export const updateProfile = async (req, res) => {
   try {
     // const userId = req.body.userId;
     const userId = req.user?.userId;
-    console.log(`Check userId`,userId);
-    const file = req.file;  // File upload
+    console.log(`Check userId`, userId);
+    const file = req.file; // File upload
     const { fullname, email, phone_number, bio, skills, company_id } = req.body;
-    if(!userId){
-      return res.status(401).json({message:"Không xác định được người dùng"})
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ message: "Không xác định được người dùng" });
     }
 
     if (
@@ -213,9 +236,14 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [userId]);
+    const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+      userId,
+    ]);
     if (userResult.rows.length === 0) {
-      return res.status(404).json({ message: "User không tồn tại", success: false })}
+      return res
+        .status(404)
+        .json({ message: "User không tồn tại", success: false });
+    }
 
     // let resumeUrl = null;
     // let resumeOriginalName = null;
@@ -232,8 +260,9 @@ export const updateProfile = async (req, res) => {
           .map((s) => s.trim());
     // Nếu có file, lưu đường dẫn
     let filePath = null;
-    if(file) {
-      filePath = file.path;
+    if (file) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      filePath = `${baseUrl}/uploads/${path.basename(file.path)}`;
     }
     // Cập nhật bảng user
     await pool.query(
@@ -320,7 +349,21 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       message: "Cập nhật hồ sơ thành công",
       success: true,
-      user: updated.rows[0],
+      user: {
+        id: updated.rows[0].id,
+        fullname: updated.rows[0].fullname,
+        email: updated.rows[0].email,
+        phone_number: updated.rows[0].phone_number,
+        role: updated.rows[0].role,
+        created_at: updated.rows[0].created_at,
+        updated_at: updated.rows[0].updated_at,
+        profile: {
+          bio: updated.rows[0].bio || null,
+          skills: updated.rows[0].skills || [],
+          company_id: updated.rows[0].company_id || null,
+          profile_photo: updated.rows[0].profile_photo || null,
+        },
+      },
     });
   } catch (error) {
     console.error("Lỗi updateProfile", error);

@@ -45,12 +45,12 @@ const Profile = () => {
                 <h1>Skills</h1>
                 <div className='flex items-center gap-1'>
                     {user?.profile?.skills.length !== 0 ? user?.profile?.skills.map((item,index) => <Badge key={index}>{item}</Badge>) : <span>N/A</span>}
-                </div>
+                </div>  
             </div>
             <div className='grid w-full max-w-sm items-center gap-1.5'>
                 <Label className="text-md font-bold">Resume</Label>
                 {
-                    isResume ? <a href="https://www.youtube.com/" target='_blank' className='text-blue-500 w-full hover:underline cursor-pointer'>Youtube</a> : <span>NA</span>
+                    isResume ? <a href={user?.profile?.profile_photo} target='_blank' className='text-blue-500 w-full hover:underline cursor-pointer'>{user?.profile?.profile_photo}</a> : <span>NA</span>
                 }
             </div>
         </div>
