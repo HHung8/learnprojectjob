@@ -109,8 +109,10 @@ export const getAllJobs = async(req,res) => {
 export const getJobById = async(req,res) => {
     try {
         const jobId = req.params.id;
+
+        // Lấy thông tin job + company
         const query = `
-            SELECT j.*, c.name as company_name
+            SELECT j.*, c.name AS company_name
             FROM jobs j
             LEFT JOIN companies c ON j.company_id = c.id
             WHERE j.id = $1
@@ -119,7 +121,15 @@ export const getJobById = async(req,res) => {
         if(result.rows.length === 0) {
             return res.status(404).json({message: "Job not found", success:false})
         }
-        return res.status(200).json({job: result.rows[0], success:true});
+        const job = result.rows[0];
+        const applicationQuery = `
+            SELECT a.* FROM applications a 
+            WHERE a.job_id = $1
+            ORDER BY a.created_at DESC
+        `;  
+        const applicationsResult = await pool.query(applicationQuery, [jobId])
+        job.applications = applicationsResult.rows;
+        return res.status(200).json({job, success:true});
     } catch (error) {
         console.error("Error getJobById", error);
         return res.status(500).json({message: "Server error", success:false});

@@ -8,6 +8,7 @@ dotenv.config();
 
 export const register = async (req, res) => {
   try {
+    console.log(`check req`, req);
     const { fullname, email, phone_number, password, role } = req.body;
     const file = req.file;
     if (!fullname || !email || !phone_number || !password || !role) {

@@ -3,7 +3,7 @@ import isAuthenticated from "../middleware/isAuthenticated.js";
 import { applyJob, getAppliedJobs, getApplicants, updateStatus, withdrawApplication } from "../controllers/application.controller.js";
 
 const router = express.Router();
-router.post("/apply/:id", isAuthenticated, applyJob);
+router.get("/apply/:id", isAuthenticated, applyJob);
 router.get("/get", isAuthenticated, getAppliedJobs);
 router.post("/:id/applicants", isAuthenticated, getApplicants);
 router.post("/status/:id/update", isAuthenticated, updateStatus);

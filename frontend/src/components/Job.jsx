@@ -5,13 +5,21 @@ import { Badge } from "@/components/ui/badge";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Job = () => {
+const Job = ({jobAll}) => {
   const navigate = useNavigate();
-  const jobId = 'lkjasdljlkajsd';
+  // const jobId = 'lkjasdljlkajsd';
+  console.log(`check jobAll`, jobAll);
+  const daysAgoFunction = (mongodbTime) => {
+    const createdAt = new Date(mongodbTime);
+    const currentTime = new Date();
+    const timeDifference = currentTime - createdAt;
+    return Math.floor(timeDifference / (1000*24*60*60));
+  }
+
   return (
     <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">2 days ago</p>
+        <p className="text-sm text-gray-500">{daysAgoFunction(jobAll?.created_at) === 0 ? "Today" : `${daysAgoFunction(jobAll?.created_at)} days ago`}</p>
         <Button variant="outline" className="rounded-full" size="icon"><Bookmark /></Button>
       </div>
 
@@ -22,17 +30,21 @@ const Job = () => {
             </Avatar>
           </Button>
           <div>
-            <h1 className="font-medium text-lg">Company Name</h1>
+            <h1 className="font-medium text-lg">{jobAll?.company?.name}</h1>
             <p className="text-sm text-gray-500">India</p>
           </div>
         </div>
+        <div>
+            <h1 className="font-bold text-lg my-2">{jobAll?.title}</h1>
+            <p className="text-sm text-gray-500">{jobAll?.description}</p>
+        </div>
         <div className="flex items-center gap-2 mt-4">
-             <Badge className={'text-blue-700 font-bold'} variant='ghost'>Positions</Badge>
-             <Badge className={'text-[#F83002] font-bold'} variant='ghost'>2</Badge>
-             <Badge className={'text-[#7209b7] font-bold'} variant='ghost'>LPA</Badge>
+             <Badge className={'text-blue-700 font-bold'} variant='ghost'>{jobAll?.position} Positions</Badge>
+             <Badge className={'text-[#F83002] font-bold'} variant='ghost'>{jobAll?.job_type}</Badge>
+             <Badge className={'text-[#7209b7] font-bold'} variant='ghost'>{jobAll?.salary}LPA</Badge>
           </div>
           <div className="flex items-center gap-4 mt-4">
-            <Button onClick={() => navigate(`/description/${jobId}`)}>Detail</Button>
+            <Button onClick={() => navigate(`/description/${jobAll?.id}`)}>Detail</Button>
             <Button className="bg-[#09b774]">Save For Later</Button>
           </div>
     </div>

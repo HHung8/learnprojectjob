@@ -12,13 +12,14 @@ const isAuthenticated = async(req,res,next) => {
             })
         }
         const decode = await jwt.verify(token, process.env.JWT_SECRET || 'MySecretKey');
+        console.log(`check decode`, decode)
         if(!decode) {
             return res.status(401).json({
                 message: "Invalid token",
                 success: false
             })
         };
-        // req.id = decode.userId;
+        req.id = decode.userId;
         req.user = decode;
         next();
     } catch (error) {

@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import API_BASE_URL from "../config/api";
+import { API_BASE_URL } from "../config/api";
 import { toast } from "sonner";
 import { setUser } from "../redux/authSlice";
 
