@@ -6,10 +6,14 @@ import {Input} from "@/components/ui/input"
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { COMPANY_API_END_POINT } from '../../config/api'
+import { useDispatch } from 'react-redux'
+import { setSingleCompany } from '../../redux/companySlice'
+import { toast } from 'sonner'
 
 const CompaniesCreate = () => {
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState();
+  const dispatch = useDispatch();
 
   const registerNewCompany = async () => {
     try {
@@ -17,11 +21,18 @@ const CompaniesCreate = () => {
         headers:{'Content-Type':'application/json'},
         withCredentials:true
        });
-       console.log(`check resdata`, res.data);
+       console.log(`check resdata`, res);
+       if(res?.data?.success) {
+          dispatch(setSingleCompany(res.data.companyName));
+          toast.success(res.data.message);
+          const companyId = res?.data?.company?.id;
+          navigate(`/admin/companies/${companyId}`);
+       }
     } catch (error) {
         console.log(error);
     }
   }
+  
 
   const handleCancel = () => {
     navigate("/admin/companies")
@@ -38,7 +49,7 @@ const CompaniesCreate = () => {
             <Input type="text" className="my-2" placeholder="JobHunt, Microsoft etc" onChange={(e) => setCompanyName(e.target.value)} />
             <div className='flex items-center gap  -2 my-10'>
                 <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                <Button>Continue</Button>
+                <Button onClick={registerNewCompany}>Continue</Button>
             </div>
         </div>
     </div>
