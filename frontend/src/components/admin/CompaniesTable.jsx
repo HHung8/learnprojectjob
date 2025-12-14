@@ -2,8 +2,21 @@ import {Table,TableCaption, TableHeader,TableRow, TableHead, TableBody, TableCel
 import {Avatar,AvatarImage} from "@/components/ui/avatar"
 import {Popover,PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 import { Edit2, MoreHorizontal } from "lucide-react";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
-const CompaniesTable = () => {
+const CompaniesTable = () => { 
+  const {companies, searchCompanyByText} = useSelector(store => store.company);
+  const [filterCompany, setFilterCompany] = useState(companies);
+  useEffect(() => {
+    const filteredCompany = companies.length >= 0 && companies.filter((company) => {
+        if(!searchCompanyByText) {
+            return true;    
+        };
+        return company?.name?.toLowerCase().includes(searchCompanyByText.toLowerCase());
+    });
+    setFilterCompany(filteredCompany);
+  }, [companies, searchCompanyByText])
   return (
     <div>
         <Table>
@@ -17,26 +30,31 @@ const CompaniesTable = () => {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                <TableRow>
-                    <TableCell>
-                    <Avatar>
-                        <AvatarImage src="https://images.unsplash.com/photo-1658204238967-3a81a063d162?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=2324" />
-                    </Avatar>
-                </TableCell>
-                <TableCell>Company Name</TableCell>
-                <TableCell>18-07-2025</TableCell>
-                <TableCell className="text-right cursor-pointer">
-                    <Popover>
-                        <PopoverTrigger ><MoreHorizontal /></PopoverTrigger>
-                        <PopoverContent className="w-32">
-                            <div className="flex items-center gap-2 w-fit cursor-pointer">
-                                <Edit2 />
-                                <span>Edit</span>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                </TableCell>
-                </TableRow>
+                {
+                     filterCompany?.map((company) => (
+                        <tr>
+                            <TableCell>
+                                <Avatar>
+                                    <AvatarImage src={company.logo} />
+                                </Avatar>
+                            </TableCell>
+                            <TableCell>{company.name}</TableCell>
+                            <TableCell>{company.created_at.split("T")[0]}</TableCell>
+                            <TableCell className="text-right cursor-pointer">
+                                <Popover>
+                                    <PopoverTrigger ><MoreHorizontal /></PopoverTrigger>
+                                    <PopoverContent className="w-32">
+                                        <div className="flex items-center gap-2 w-fit cursor-pointer">
+                                            <Edit2 />
+                                            <span>Edit</span>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </TableCell>
+                        </tr>
+                     ))
+                }
+             
             </TableBody>
         </Table>
     </div>
