@@ -7,12 +7,20 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const AdminJobsTable = () => {
-//   const {allAdminJobs, searchJobByText} = useSelector();
-//   const [filterJobs, setFilterJobs] = useState(allAdminJobs);
-//   const navigate = useNavigate();
-
-
-
+  const {allAdminJobs, searchJobByText} = useSelector(store => store.job);
+  const [filterJobs, setFilterJobs] = useState(allAdminJobs);
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log('called');
+    const filteredJobs = allAdminJobs.filter((job) => {
+        if(!searchJobByText) {
+            return true;
+        };
+        return job?.title?.toLowerCase().includes(searchJobByText.toLowerCase()) || job?.company_name?.toLowerCase().includes(searchJobByText.toLowerCase());
+    });
+    setFilterJobs(filteredJobs)
+  }, [allAdminJobs, searchJobByText])   
+    
   return (
     <div>
         <Table>
@@ -24,28 +32,35 @@ const AdminJobsTable = () => {
                 <TableHead className="text-right">Action</TableHead>
             </TableHeader>
             <TableBody>
-                <TableCell>Test TableName</TableCell>
-                <TableCell>Test Title</TableCell>
-                <TableCell>2025-12-01</TableCell>
-                <TableCell className="text-right cursor-pointer">
-                    <Popover>
-                        <PopoverTrigger><MoreHorizontal/></PopoverTrigger>
-                        <PopoverContent className="w-32">
-                            <div className='flex items-center gap-2 w-fit cursor-pointer'>
-                                <Edit2 className='w-4' />
-                                <span>Edit</span>
-                            </div>
-                            <div className='flex items-center w-fit gap-2 cursor-pointer mt-2'>
-                                <Eye className='w-4' />
-                                <span>Applications</span>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                </TableCell>
+                {
+                    filterJobs?.map((job) => (
+                        <tr>    
+                            <TableCell>{job?.company_name}</TableCell>
+                            <TableCell>{job?.title}</TableCell>
+                            <TableCell>{job?.created_at.split("T")[0]}</TableCell>
+                            <TableCell className="text-right cursor-pointer">
+                                <Popover>
+                                    <PopoverTrigger><MoreHorizontal /></PopoverTrigger>
+                                    <PopoverContent className="w-32">
+                                            <div onClick={() => navigate(`/admin/jobs/${job.id}`)} className='flex items-center gap-2 w-fit cursor-pointer'>
+                                                <Edit2 className='w-4' />
+                                                <span>Edit</span>
+                                            </div>
+                                            <div onClick={() => navigate(`/admin/jobs/${job.id}/application`)} className='flex items-center w-fit gap-2 cursor-pointer mt-2'>
+                                                <Eye className='w-4' />
+                                                <span>Applications</span>
+                                            </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </TableCell>
+
+                        </tr>
+                    ))
+                }
             </TableBody>
         </Table>
     </div>
   )
 }
 
-export default AdminJobsTable
+export default AdminJobsTable   

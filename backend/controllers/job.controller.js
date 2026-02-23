@@ -141,10 +141,10 @@ export const getAdminJobs = async(req,res) => {
     try {
         const adminId = req.id;
         const query = `
-            SELECT j.*, c.name as company_name
-            FROM jobs j
+            SELECT j.*, c.name AS company_name
+            FROM jobs j 
             LEFT JOIN companies c ON j.company_id = c.id
-            WHERE c.user_id = $1
+            WHERE j.created_by = $1
             ORDER BY j.created_at DESC;
         `;
         const result = await pool.query(query, [adminId]);

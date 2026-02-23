@@ -88,7 +88,7 @@ export const getCompanyById = async(req,res) => {
         }
         return res.status(200).json({
             company: result.rows[0],
-            success:false
+            success:true
         });
     } catch (error) {
         console.error("Lỗi getCompanyById", error);
