@@ -22,7 +22,7 @@ export const postJob = async(req,res) => {
             title, 
             description, 
             requirementsArray,
-            Number(salary),
+            salary,
             location,
             jobType,
             experience,

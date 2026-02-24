@@ -46,7 +46,7 @@ const AdminJobsTable = () => {
                                                 <Edit2 className='w-4' />
                                                 <span>Edit</span>
                                             </div>
-                                            <div onClick={() => navigate(`/admin/jobs/${job.id}/application`)} className='flex items-center w-fit gap-2 cursor-pointer mt-2'>
+                                            <div onClick={() => navigate(`/admin/jobs/${job.id}/applications`)} className='flex items-center w-fit gap-2 cursor-pointer mt-2'>
                                                 <Eye className='w-4' />
                                                 <span>Applications</span>
                                             </div>
