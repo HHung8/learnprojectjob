@@ -6,13 +6,13 @@ import Login from './components/auth/Login';
 import Jobs from './components/Jobs';
 import Browse from './components/Browse';
 import Profile from './components/Profile';
-import JobDescription from './components/JobDescription';
 import Companies from './components/admin/Companies';
 import CompaniesCreate from './components/admin/CompaniesCreate';
 import CompanySetup from './components/admin/CompanySetup';
 import AdminJobs from './components/admin/AdminJobs';
 import PostJobs from './components/admin/PostJobs';
 import Applicants from './components/admin/Applicants';
+import JobDescription from './components/jobDescription';
 
 const appRouter = createBrowserRouter([
   {
