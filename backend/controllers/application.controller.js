@@ -93,7 +93,7 @@ export const getApplicants = async (req,res) => {
         const jobId = req.params.id;
         const query =  `
             SELECT a.*,
-                u.id AS applicant_id, u.fullname AS applicant_name, u.email AS applicant_email
+                u.id AS applicant_id, u.fullname AS applicant_name, u.email AS applicant_email, u.phone_number
             FROM applications a
             JOIN users u ON a.applicant_id = u.id
             WHERE a.job_id = $1
@@ -127,13 +127,22 @@ export const updateStatus = async(req,res) => {
                 success:false,
             });
         }
+        const normalizedStatus = status.toLowerCase();
+        const allowedStatus = ['pending', 'accepted', 'rejected'];
+        if(!allowedStatus.includes(normalizedStatus)) {
+            return res.status(400).json({
+                message: "Invalid status value",
+                success: false,
+            })
+        }
+
         const updateQuery = `
             UPDATE applications
             SET status = $1
             WHERE id = $2
             RETURNING *
         `;
-        const result = await pool.query(updateQuery, [status, applicationId]);
+        const result = await pool.query(updateQuery, [normalizedStatus, applicationId]);
         if(result.rows.length === 0) {
             return res.status(404).json({
                 message:"Application not found",
