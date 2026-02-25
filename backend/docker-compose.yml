@@ -5,12 +5,11 @@ services:
     environment:
       POSTGRES_USER: nguyenhung
       POSTGRES_DB: job
-      POSTGRES_HOST_AUTH_METHOD: trust  
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
-      - ./db-init:/docker-entrypoint-initdb.d  
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nguyenhung -d job"]
       interval: 5s
