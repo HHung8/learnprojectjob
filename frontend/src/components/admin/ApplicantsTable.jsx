@@ -11,16 +11,14 @@ const shortlistingStatus = ["Accepted", "Rejected"]
 
 const ApplicantsTable = () => {
   const {applicants} = useSelector(store => store.application);
-  console.log(`check applicants123`, applicants);
   const statusHandler = async (status, id) => {
     console.log("called");
     try {
         axios.defaults.withCredentials = true;
         const res = await axios.post(`${APPLICATION_API_END_POINT}/status/${id}/update`, {status});
-        console.log(`check res`, res);
-        // if(res.data.success) {
-        //     toast.success(res.data.message);
-        // }
+        if(res.data.message) {
+            toast.success(res.data.message);
+        }
     } catch (error) {
         toast.error(error.response.data.message)
     }
@@ -46,7 +44,11 @@ const ApplicantsTable = () => {
                             <TableCell>{item?.applicant_name}</TableCell>
                             <TableCell>{item?.applicant_email}</TableCell>
                             <TableCell>{item?.phone_number}</TableCell>
-                            <TableCell>Resume</TableCell>
+                            <TableCell className='text-blue-600 cursor-pointer'>
+                                {item?.profile_photo ? (
+                                    <a href={item?.profile_photo} target='_blank' rel='noopener'>View Resume</a>
+                                ) : (<span className='text-gray-400'>NA</span>)}
+                            </TableCell>
                             <TableCell>{item?.created_at.split("T")[0]}</TableCell>
                             <TableCell className='float-right cursor-pointer'>
                                 <Popover>

@@ -16,7 +16,7 @@ const Applicants = () => {
     const fetchAllApplicants = async () => {
         try {
             const res = await axios.get(`${APPLICATION_API_END_POINT}/${params.id}/applicants`, {withCredentials:true});
-            console.log(`check response api `, res);
+            console.log(`check response api 1234567 `, res);
             dispatch(setAllApplicants(res.data.application));
         } catch (error) {
             console.log(error);
