@@ -92,12 +92,11 @@ export const getApplicants = async (req,res) => {
     try {
         const jobId = req.params.id;
         const query =  `
-            SELECT a.*,
-                u.id AS applicant_id, u.fullname AS applicant_name, u.email AS applicant_email, u.phone_number
-            FROM applications a
-            JOIN users u ON a.applicant_id = u.id
+            SELECT a.*, up.profile_photo ,u.id AS applicant_id, u.fullname AS applicant_name, u.email AS applicant_email, u.phone_number FROM applications a 
+            INNER JOIN users u ON a.applicant_id = u.id
+            inner join user_profiles up on u.id = up.user_id 
             WHERE a.job_id = $1
-            ORDER BY a.created_at DESC
+            ORDER BY a.created_at desc
         `;
         const result = await pool.query(query,[jobId]);
         if(result.rows.length === 0) {

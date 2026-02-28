@@ -170,9 +170,11 @@ export const login = async (req, res) => {
         success: true,
       });
   } catch (error) {
-    console.log("Lỗi đăng nhập", error);
+    console.error("🔥 LOGIN ERROR FULL:", error);
+    console.error("🔥 STACK:", error.stack);
     return res.status(500).json({
       message: "Lỗi server",
+      error: error.message,
       success: false,
     });
   }

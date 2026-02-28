@@ -1,22 +1,4 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: postgres_container
-    environment:
-      POSTGRES_USER: nguyenhung
-      POSTGRES_DB: job
-      POSTGRES_HOST_AUTH_METHOD: trust
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nguyenhung -d job"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    restart: always
-
   backend:
     build: .
     container_name: backend_container
@@ -24,10 +6,6 @@ services:
       - "3003:3002"
     env_file:
       - .env
-    depends_on:
-      postgres:
-        condition: service_healthy   
+    environment:
+      - DB_HOST=host.docker.internal
     restart: always
-
-volumes:
-  pgdata:

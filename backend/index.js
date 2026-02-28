@@ -25,6 +25,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173", // Vite dev
   "http://localhost:3000", // React dev (nếu có)
+  "http://localhost:8000"
 ];
 
 app.use(
@@ -44,7 +45,10 @@ app.use(
 );
 
 // Handle preflight request
-app.options("*", cors());
+app.options("*", cors({
+  origin:true,
+  credentials:true
+}));
 
 /* ========================
    ✅ MIDDLEWARE
@@ -58,7 +62,7 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   console.log(`[${req.method}] ${req.originalUrl}`);
   next();
-});
+}); 
 
 /* ========================
    ✅ STATIC FILE

@@ -62,6 +62,7 @@ export const getAllJobs = async(req,res) => {
             ORDER BY j.created_at DESC
         `;
         const result = await pool.query(query, [`%${keyword}%`]);
+        console.log(`check result job 123`, result);
         if(result.rows.length === 0) {
             return res.status(404).json({message: "Not found this job", success:false});
         };
