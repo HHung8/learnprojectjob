@@ -3,9 +3,8 @@ import { Badge } from "@/components/ui/badge"
 
 const LatestJobsCards = ({jobHook}) => {
   const navigate = useNavigate();
-  console.log(`check jobHook`, jobHook)
   return (
-    <div className='p-5 rounded-md shadow-xl bg-white border border-gray-100 cursor-pointer'>
+    <div onClick={() => navigate(`/description/${jobHook.id}`)} className='p-5 rounded-md shadow-xl bg-white border border-gray-100 cursor-pointer'>
         <div>
             <h1 className='font-medium text-lg'>{jobHook?.company?.name}</h1>
             <p className='text-sm text-gray-500'>India</p>
