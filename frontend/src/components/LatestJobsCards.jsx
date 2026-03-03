@@ -7,7 +7,7 @@ const LatestJobsCards = ({jobHook}) => {
     <div onClick={() => navigate(`/description/${jobHook.id}`)} className='p-5 rounded-md shadow-xl bg-white border border-gray-100 cursor-pointer'>
         <div>
             <h1 className='font-medium text-lg'>{jobHook?.company?.name}</h1>
-            <p className='text-sm text-gray-500'>India</p>
+            <p className='text-sm text-gray-500'>VietNam</p>
         </div>
         <div>
             <h1 className='font-bold text-lg my-2'>{jobHook?.title}</h1>
