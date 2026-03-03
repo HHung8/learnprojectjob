@@ -4,6 +4,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config/api";
 
 const Job = ({job}) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Job = ({job}) => {
     <div className="flex items-center gap-2 my-2">
           <Button className="p-6" variant="outline" size="icon">
             <Avatar>
-              <AvatarImage src={`http://localhost:3002${job?.company?.logo}`}/>
+              <AvatarImage src={`${BASE_URL}${job?.company?.logo}`}/>
             </Avatar>
           </Button>
           <div>
