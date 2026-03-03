@@ -29,8 +29,9 @@ export const register = async (req, res) => {
     // Nếu có file thì lấy đường dẫn
     let filePath = null;
     if (file) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
-      filePath = `${baseUrl}/uploads/${path.basename(file.path)}`;
+      // const baseUrl = `${req.protocol}://${req.get("host")}`;
+      // filePath = `${baseUrl}/uploads/${path.basename(file.path)}`;
+      filePath = `/uploads/${path.basename(file.path)}`;
     }
 
     // Thêm người dùng mới
@@ -264,8 +265,9 @@ export const updateProfile = async (req, res) => {
     // Nếu có file, lưu đường dẫn
     let profilePhotoPath = null;
     if (file) {
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
-      profilePhotoPath = `${baseUrl}/uploads/${path.basename(file.path)}`;
+      // const baseUrl = `${req.protocol}://${req.get("host")}`;
+      // profilePhotoPath = `${baseUrl}/uploads/${path.basename(file.path)}`;
+      profilePhotoPath = `/uploads/${path.basename(file.path)}`;
     }
     // Cập nhật bảng user
     await pool.query(
