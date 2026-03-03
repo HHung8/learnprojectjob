@@ -10,6 +10,10 @@ COPY package*.json ./
 # Cài dependencies
 RUN npm install
 
+# Nhận biến môi trường khi build
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Copy toàn bộ source coce
 COPY . .
 
@@ -22,6 +26,7 @@ FROM nginx:alpine
 
 # Copy file build từ stage build sang nginx
 COPY --from=build /job/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf  
 
 # Expose cổng 
 EXPOSE 80

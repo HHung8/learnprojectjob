@@ -10,7 +10,7 @@ const CompaniesTable = () => {
   const {companies, searchCompanyByText} = useSelector(store => store.company);
   const [filterCompany, setFilterCompany] = useState(companies);
   const navigate = useNavigate();
-  const BASE_URL = import.meta.env.VITE_IMAGE_URL;
+  const BASE_URL = import.meta.env.VITE_API_URL;
   useEffect(() => { 
     const filteredCompany = companies.length >= 0 && companies.filter((company) => {
         if(!searchCompanyByText) {  
